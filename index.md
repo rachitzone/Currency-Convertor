@@ -1,37 +1,151 @@
-## Welcome to GitHub Pages
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Convertor</title>
+    <style>
+      *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container{
+    width: 450px;
+}
+h1{
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #000000;
+    margin-bottom: 0.5em;
+}
+.container .box{
+    width: 100%;
+    display: flex;
+}
+.box div{
+    width: 100%;
+}
+select{
+    box-shadow: 2px 2px 4px #000000;
+    width: 95%;
+    height: 40px;
+    font-size: 1em;
+    cursor: pointer;
+    outline: none;
+    background: #389dfc;
+    color: white;
+    margin: 0.2em 0;
+    padding: 0 1em;
+    border-radius: 10px;
+    border: none;
+}
+input{
+    box-shadow: 2px 2px 4px #000000;
+    width: 95%;
+    height: 40px;
+    font-size: 1em;
+    margin: 0.2em 0;
+    border-radius: 10px;
+    border: none;
+    background: #edeef7;
+    outline: none;
+    padding: 0 1em;
+}
+.btn{
+    box-shadow: 2px 2px 4px #000000;
+    width: 98%;
+    height: 40px;
+    background: #364547;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 0.5em 0;
+}
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+    </style>  
+</head>
+<body>
+    <div class="container">
+        <h1>Currency Convertor</h1>
+        <div class="box">
+            <div class="left_box">
+                <select name="currency" class="currency"></select>
+                <input type="number" name="" id="num">
+            </div>
+            <div class="right_box">
+                <select name="currency" class="currency"></select>
+                <input type="text" name="" id="ans" disabled>
+            </div>
+        </div>
+        <button class="btn" id="btn">Convert</button>
+    </div>
 
-You can use the [editor on GitHub](https://github.com/rachitzone/Currency-Convertor/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+    <script>
+      const select = document.querySelectorAll(".currency");
+const btn = document.getElementById("btn");
+const num = document.getElementById("num");
+const ans = document.getElementById("ans");
 
-### Markdown
+fetch("https://api.frankfurter.app/currencies")
+  .then((data) => data.json())
+  .then((data) => {
+    display(data);
+  });
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+function display(data) {
+  const entries = Object.entries(data);
+  for (var i = 0; i < entries.length; i++) {
+    select[0].innerHTML += `<option value="${entries[i][0]}">${entries[i][0]}</option>`;
+    select[1].innerHTML += `<option value="${entries[i][0]}">${entries[i][0]}</option>`;
+  }
+}
 
-```markdown
-Syntax highlighted code block
+btn.addEventListener("click", () => {
+  let currency1 = select[0].value;
+  let currency2 = select[1].value;
+  let value = num.value;
 
-# Header 1
-## Header 2
-### Header 3
+  if (currency1 != currency2) {
 
-- Bulleted
-- List
+    convert(currency1, currency2, value);
+  } else {
+    alert("Choose Diffrent Currency");
+  }
+});
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/rachitzone/Currency-Convertor/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+function convert(currency1, currency2, value) {
+  const host = "api.frankfurter.app";
+  fetch(
+    `https://${host}/latest?amount=${value}&from=${currency1}&to=${currency2}`
+  )
+    .then((val) => val.json())
+    .then((val) => {
+      console.log(Object.values(val.rates)[0]);
+      ans.value = Object.values(val.rates)[0];
+    });
+}
+    </script>
+</body>
+</html>
